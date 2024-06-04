@@ -1,0 +1,25 @@
+- Database design
+    - users
+        - individual users 
+            - Name
+            - Created 
+            - birthday
+            - preferred_payment_method
+            - default_split_percentage
+    - Tabs
+        - tab metadata
+            - Name
+            - total_amount
+            - Description
+    - user_tab_map
+        - maps individual users with individual tabs
+        - breaks down individual user balances owed on tabs
+        - custom_split_percentage 
+    - User payments (?)
+        - Insert only table for each payment made
+        - Maybe used for accounting?
+            - Allows the tracking of balances overtime       
+    - events
+        - logging table
+        - get_logs
+            - print of this table from a given date range
