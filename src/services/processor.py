@@ -5,8 +5,10 @@ import discord
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
 
-from src.model.event import DiscordEvent
 import src.common.utils as utils
+import src.env as env
+from src.db.db import DBConnector 
+
 from gui.views import (
     CreateTabView, 
     UpdateTabView, 
@@ -18,25 +20,31 @@ class ProcessorSelector():
     """
     Factory class to select event processor
     """
-    def __init__(self, event_type) -> None:
+    def __init__(self, event_type: str) -> None:
         self.event_type = event_type
         
-    def get_event_processor(self, event: dict):
+    def get_event_processor(self):
         processor = {
-            "TAB": TabProcessor
+            "TAB": TabProcessor,
+            "MEMBER": MemberProcessor
         }
 
         processor: Processor = processor.get(self.event_type)
-        return processor(event)
+        return processor
 
 class Processor():
     """
     Event Processor base class
     """
-    def __init__(self, event: DiscordEvent, ctx: discord.ApplicationContext) -> None:
-        self.event = event
+    def __init__(self, sub_type: str, ctx: discord.ApplicationContext, event = None) -> None:
+        self.sub_type = sub_type
         self.ctx = ctx
-    
+        self.db = DBConnector()
+        self.event = event
+        
+    def _log_event(self):
+        self.db.write_to_table(env.get_events_table_name(), self.event)
+       
     def process(self):
         pass
     
@@ -44,9 +52,6 @@ class Processor():
 class TabProcessor(Processor):
     """
     Tab Processor class
-
-    Args:
-        Processor (_type_): _description_
     """
     def __init__(self, event, ctx) -> None:
         super().__init__(event, ctx)
@@ -60,11 +65,12 @@ class TabProcessor(Processor):
             "GET": self.get_tab,
         }
         
-        processor = event_type.get(self.event.sub_type)
+        processor = event_type.get(self.sub_type)
         processor()
 
     def create_tab(self):
         view = CreateTabView()
+        
         
     def delete_tab(self):
         view = DeleteTabView()
@@ -76,7 +82,35 @@ class TabProcessor(Processor):
         file_list = self.db.list_files()
         tab_modal = GetTabView()
         return tab_modal
+
+
+class MemberProcessor(Processor):
+    """
+    Member Processor class
+    """
+    def __init__(self, event, ctx) -> None:
+        super().__init__(event, ctx)
+        
     
+    def process(self, event):
+        event_type = {
+            "ADD": self.add_member,
+            "REMOVE": self.remove_member,
+            "REFRESH": self.refresh_members
+        }
+        
+        processor = event_type.get(self.sub_type)
+        processor(event)
+
+    def add_member(self):
+        pass
+        
+    def remove_member(self):
+        pass
+
+    def refresh_members(self):
+        pass
+       
 
 if __name__ == "__main__": 
     pass

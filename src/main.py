@@ -1,15 +1,14 @@
-import discord
 import os
+import discord
 from src.services.discord_bot import DiscordBot
-from src.model.event import DiscordEvent
-from src.services.processor import Processor, ProcessorSelector, TabProcessor
-bot = DiscordBot()
+from src.cogs.tab_cog import TabCog
+from src.cogs.members_cog import MembersCog
 
-@bot.slash_command(name="tab")
-async def process_event(ctx):
-    event = DiscordEvent({"type":"TAB", "sub_type": "DELETE"})
-    eventprocessor: Processor = ProcessorSelector(event.type).get_event_processor(event)
+import src.env as env
 
-    await eventprocessor.process()
+bot = DiscordBot(intents=discord.Intents.all())
 
-bot.run(os.getenv('TOKEN'))
+bot.add_cog(TabCog(bot=bot))
+bot.add_cog(MembersCog(bot=bot))
+
+bot.run(env.get_token())

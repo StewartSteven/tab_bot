@@ -1,21 +1,22 @@
+from ast import Pass
 from typing import List
 import discord
 
 class BaseModal(discord.ui.modal): 
     """
-    Class representing Dicord Modal Dialogues
+    Class representing Dicord Modals
 
-    Args:
-        discord (_type_): _description_
     """
     def __init__(self, *args, **kwargs) -> None:
         super.__init__(*args, **kwargs)
 
+    def set_items():
+        pass
 class CreateTabModal(BaseModal):
     def __init__(self, *args, **kwargs) -> None:
         super.__init__(*args, **kwargs)
         self.title = "Create Tab"
-
+        
 class UpdateTabModal(BaseModal):
     def __init__(self, *args, **kwargs) -> None:
         super.__init__(*args, **kwargs)
@@ -30,5 +31,4 @@ class GetTabModal(BaseModal):
     def __init__(self, *args, **kwargs) -> None:
         super.__init__(*args, **kwargs)
         self.title = "Get Tab"
-    async def display_tabs(options: List[discord.SelectOption]):
-        pass
+   
