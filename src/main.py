@@ -1,20 +1,16 @@
 import discord
-import os # default module
-from dotenv import load_dotenv
+import os
+from src.services.discord_bot import DiscordBot
+from src.model.event import DiscordEvent
+from src.services.processor import Processor, ProcessorSelector, TabProcessor
+bot = DiscordBot()
 
-load_dotenv() # load all the variables from the env file
-bot = discord.Bot()
+@bot.slash_command(name="tab")
+async def send_modal(ctx):
+    event = DiscordEvent({"type":"TAB", "sub_type": "DELETE"})
+    eventprocessor: Processor = ProcessorSelector(event.type).get_event_processor(event)
+    eventprocessor.process()
 
-@bot.event
-async def on_ready():
-    print(f"{bot.user} is ready and online!")
+    await eventprocessor.process()
 
-@bot.slash_command(name="hello", description="Say hello to the bot")
-async def hello(ctx: discord.ApplicationContext):
-    await ctx.respond("Hello!")
-
-@bot.slash_command(name="testtesttest", description="testing")
-async def testcommand(ctx: discord.ApplicationContext):
-    await ctx.respond("Did It Work?")
-
-bot.run(os.getenv('TOKEN')) # run the bot with the token
+bot.run(os.getenv('TOKEN'))
