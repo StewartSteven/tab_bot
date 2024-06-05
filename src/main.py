@@ -9,7 +9,6 @@ bot = DiscordBot()
 async def send_modal(ctx):
     event = DiscordEvent({"type":"TAB", "sub_type": "DELETE"})
     eventprocessor: Processor = ProcessorSelector(event.type).get_event_processor(event)
-    eventprocessor.process()
 
     await eventprocessor.process()
 
