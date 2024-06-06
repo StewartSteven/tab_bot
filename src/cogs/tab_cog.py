@@ -1,7 +1,10 @@
 import discord
+import src.env as env
 from discord.ext import commands
 from discord.commands import SlashCommandGroup
 from src.services.processor import Processor, ProcessorSelector, TabProcessor
+from src.gui.views import InitializingTabView
+from src.common.utils import convert_list_to_select_options
 
 class TabCog(commands.Cog): 
     """
@@ -10,34 +13,14 @@ class TabCog(commands.Cog):
     Cogs are used for organizing functionality and commands for the bot
     """
 
-    tab_group = SlashCommandGroup("tabs", "Commands for Tab Management")
+    # tab_group = SlashCommandGroup("tabs", "Commands for Tab Management")
 
     def __init__(self, bot: discord.Bot): # this is a special method that is called when the cog is loaded
         self.bot = bot
 
-    @tab_group.command(name="create")
-    async def process_event(ctx):
-        event = {"type":"TAB", "sub_type": "DELETE"}
-        eventprocessor: Processor = ProcessorSelector(event["type"]).get_event_processor(event["sub_type"], ctx)
-        eventprocessor.process()
-
-    @tab_group.command(name="delete")
-    async def process_event(ctx):
-        event = {"type":"TAB", "sub_type": "DELETE"}
-        eventprocessor: Processor = ProcessorSelector(event["type"]).get_event_processor(event["sub_type"], ctx)
-        eventprocessor.process()
-
-    @tab_group.command(name="update")
-    async def process_event(ctx):
-        event = {"type":"TAB", "sub_type": "UPDATE"}
-        eventprocessor: Processor = ProcessorSelector(event["type"]).get_event_processor(event["sub_type"], ctx)
-        eventprocessor.process()
-
-    @tab_group.command(name="get")
-    async def process_event(ctx):
-        event = {"type":"TAB", "sub_type": "GET"}
-        eventprocessor: Processor = ProcessorSelector(event["type"]).get_event_processor(event["sub_type"], ctx)
-        eventprocessor.process()
+    @discord.slash_command(name="tab")
+    async def process(self, ctx):
+        await ctx.respond("Select and option from the menu!", view=InitializingTabView())
 
 
 def setup(bot: discord.Bot): # this is called by Pycord to setup the cog

@@ -1,5 +1,12 @@
 import os
 
+TAB_EVENTS = [
+    {"action": "CREATE", "description":"Create a new tab"},
+    {"action":"UPDATE", "description":"Update an existing tab (make payment, add user)"},
+    {"action":"DELETE", "description":"Delete an existing tab"},
+    {"action":"GET", "description":"Retrieve an existing tab"}
+]
+
 def get_users_table_name():
     return ""
 
