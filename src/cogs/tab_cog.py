@@ -17,7 +17,7 @@ class GuiTabCog(commands.Cog):
 
     @discord.slash_command(name="tabs", description = "Initiates Tab Management process")
     async def process(self, ctx: discord.ApplicationContext):
-        await ctx.respond("Select and option from the menu!", view=InitializingTabView(ctx.author))
+        await ctx.respond("Select and option from the menu!", view=InitializingTabView(ctx.author), ephemeral=True)
 
 
 def setup(bot: discord.Bot): # this is called by Pycord to setup the cog

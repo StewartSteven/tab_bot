@@ -2,6 +2,23 @@ from typing import Dict, List
 import discord
 from src.db.db import DBConnector   
 
+class DefaultButton(discord.ui.Button):
+    def __init__(self, label):
+        super().__init__(label=label)
+    
+    async def callback(self, interaction: discord.Interaction):
+        await interaction.respond(self.label, ephemeral=True)
+
+class ConfirmationView(discord.ui.View):
+    def __init__(self, processor, event):
+        super().__init__()
+        self.processor = processor
+        self.event = event
+        self.add_item(DefaultButton("Confirm"))
+        self.add_item(DefaultButton("Edit"))
+        self.add_item(DefaultButton("Cancel"))
+
+
 class BaseModal(discord.ui.Modal): 
     """
     Class representing Discord Modals
@@ -36,9 +53,11 @@ class BaseModal(discord.ui.Modal):
         status = "SUCCESS" if success else "FAILED"
         embed = discord.Embed(title=self.title, description=status)
         self.set_embed_fields(embed=embed)
-        await interaction.response.send_message(embeds=[embed])
-    
 
+        await interaction.response.send_message(embed=embed, ephemeral=True) 
+        view =  ConfirmationView(self.processor, event=event)
+        await interaction.followup.send(view=view, ephemeral=True)
+        
 
 class CreateTabModal(BaseModal):
     def __init__(self, *args, **kwargs) -> None:

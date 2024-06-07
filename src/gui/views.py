@@ -50,11 +50,14 @@ class InitializingTabView(BaseView):
         options = convert_list_to_select_options(env.TAB_EVENTS))
     async def initialize(self, select, interaction: discord.Interaction):
         event_type = select.values[0]
-        select.disabled = True
-        await self.message.edit(view=self)
-
+        
         GuiSelector = GuiProcessorSelector()
         ProcessorGui = GuiSelector.get_event_processor(event_type)
 
         await interaction.response.send_modal(ProcessorGui())
-        await interaction.followup.send("Generating Data Prompt...")
+        await interaction.followup.send("Generating Data Prompt...", ephemeral=True)
+        await self.wait()
+                
+        select.disabled = True
+        await interaction.edit_original_response(view=self)
+
