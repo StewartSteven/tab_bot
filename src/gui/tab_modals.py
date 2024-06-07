@@ -9,14 +9,22 @@ class DefaultButton(discord.ui.Button):
     async def callback(self, interaction: discord.Interaction):
         await interaction.respond(self.label, ephemeral=True)
 
+
 class ConfirmationView(discord.ui.View):
     def __init__(self, processor, event):
         super().__init__()
         self.processor = processor
         self.event = event
-        self.add_item(DefaultButton("Confirm"))
-        self.add_item(DefaultButton("Edit"))
-        self.add_item(DefaultButton("Cancel"))
+        self.buttons_disabled = False
+
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
+        if not self.buttons_disabled:
+            for item in self.children:
+                if isinstance(item, discord.ui.Button):
+                    item.disabled = True
+            self.buttons_disabled = True
+            await interaction.response.edit_message(view=self)
+        return True
 
 
 class BaseModal(discord.ui.Modal): 
@@ -54,9 +62,16 @@ class BaseModal(discord.ui.Modal):
         embed = discord.Embed(title=self.title, description=status)
         self.set_embed_fields(embed=embed)
 
-        await interaction.response.send_message(embed=embed, ephemeral=True) 
         view =  ConfirmationView(self.processor, event=event)
-        await interaction.followup.send(view=view, ephemeral=True)
+        view.add_item(DefaultButton("Confirm"))
+        view.add_item(DefaultButton("Edit"))
+        view.add_item(DefaultButton("Cancel"))
+
+        await interaction.response.send_message(view=view, embed=embed, ephemeral=True)
+
+
+
+        
         
 
 class CreateTabModal(BaseModal):

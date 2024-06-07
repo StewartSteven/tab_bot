@@ -56,8 +56,5 @@ class InitializingTabView(BaseView):
 
         await interaction.response.send_modal(ProcessorGui())
         await interaction.followup.send("Generating Data Prompt...", ephemeral=True)
-        await self.wait()
-                
-        select.disabled = True
-        await interaction.edit_original_response(view=self)
+        await interaction.delete_original_response()
 
