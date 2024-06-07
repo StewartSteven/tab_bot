@@ -1,8 +1,10 @@
 import os
 
+# Maybe convert this to an enum??
 TAB_EVENTS = [
     {"action": "CREATE", "description":"Create a new tab"},
-    {"action":"UPDATE", "description":"Update an existing tab (make payment, add user)"},
+    {"action":"ADD_USER_TO_TAB", "description":"Add a user to an existing tab (by tab id)"},
+    {"action":"MAKE_PAYMENT", "description":"Make a payment on an existing tab"},
     {"action":"DELETE", "description":"Delete an existing tab"},
     {"action":"GET", "description":"Retrieve an existing tab"}
 ]

@@ -1,5 +1,5 @@
 import discord
-import src.env as env
+import common.env as env
 from src.db.db import DBConnector 
 
 class DiscordBot(discord.Bot):

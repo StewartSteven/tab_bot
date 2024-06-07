@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from src.services.processor import Processor, ProcessorSelector, MemberProcessor
+from services.processor import Processor, ProcessorSelector, MemberProcessor
 
 class MembersCog(commands.Cog): 
     """

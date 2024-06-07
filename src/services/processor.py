@@ -4,13 +4,6 @@ import discord
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
 
-from gui.views import (
-    CreateTabView,
-    UpdateTabView, 
-    DeleteTabView, 
-    GetTabView    
-    )
-
 class ProcessorSelector():
     """
     Factory class to select event processor
@@ -20,7 +13,6 @@ class ProcessorSelector():
         
     def get_event_processor(self):
         processor = {
-            "TAB": TabProcessor,
             "MEMBER": MemberProcessor
         }
 
@@ -39,38 +31,6 @@ class Processor(ABC):
     @abstractmethod
     def process(self):
         pass
-
-class TabProcessor(Processor):
-    """
-    Tab Processor class
-    """
-    def __init__(self, event, ctx) -> None:
-        super().__init__(event, ctx)
-        
-    def process(self):
-        event_type = {
-            "CREATE": self.create_tab,
-            "DELETE": self.delete_tab,
-            "UPDATE": self.update_tab,
-            "GET": self.get_tab,
-        }
-        
-        processor = event_type.get(self.sub_type)
-        processor()
-
-    def create_tab(self):
-        view = CreateTabView()
-        
-    def delete_tab(self):
-        view = DeleteTabView()
-        
-    def update_tab(self):
-        view = UpdateTabView()
-        
-    def get_tab(self):
-        view = GetTabView()
-        return view
-
 
 class MemberProcessor(Processor):
     """

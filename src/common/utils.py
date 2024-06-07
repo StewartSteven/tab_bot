@@ -7,4 +7,5 @@ def convert_list_to_select_options(items: List[Dict[str, str]]) -> List[discord.
         option = discord.SelectOption(label=item.get("description"), value=item.get("action"))
         options.append(option)
     return options
+    
 

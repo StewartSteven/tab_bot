@@ -1,5 +1,5 @@
 import pandas as pd
-import src.env as env   
+import common.env as env   
 import os
 
 class DBConnector():
@@ -22,4 +22,7 @@ class DBConnector():
 
     def get_payments_by_user():
         pass
+
+    def log_to_db(self, table_name, event):
+        self.write_to_table(env.get_events_table_name(), table_name, event)
     
