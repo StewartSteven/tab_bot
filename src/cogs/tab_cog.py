@@ -15,7 +15,7 @@ class GuiTabCog(commands.Cog):
     def __init__(self, bot: discord.Bot): # this is a special method that is called when the cog is loaded
         self.bot = bot
 
-    @discord.slash_command(name="tabs")
+    @discord.slash_command(name="tabs", description = "Initiates Tab Management process")
     async def process(self, ctx: discord.ApplicationContext):
         await ctx.respond("Select and option from the menu!", view=InitializingTabView(ctx.author))
 
