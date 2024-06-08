@@ -1,6 +1,6 @@
 import discord
-import src.common.env as env
-from src.common.utils import convert_list_to_select_options
+from src.common.utils import convert_enum_to_select_options
+from src.enums.event_enums import TabEvents
 from gui.view import BaseView
 from gui.button import DefaultButton
 from gui.modal import BaseModal
@@ -11,7 +11,8 @@ def get_event_processor(event_type) -> BaseModal:
             "DELETE": DeleteTabModal,
             "ADD_USER_TO_TAB": AddUserTabModal,
             "MAKE_PAYMENT": PaymentTabModal,
-            "GET": GetTabModal
+            "GET": GetTabModal,
+            "LIST": ListTabsModal
         }
         return event_processors.get(event_type)
 
@@ -24,7 +25,7 @@ class InitializingTabView(BaseView):
         placeholder = "Choose your action", # the placeholder text that will be displayed if nothing is selected
         min_values = 1, # the minimum number of values that must be selected by the users
         max_values = 1, # the maximum number of values that can be selected by the users
-        options = convert_list_to_select_options(env.TAB_EVENTS))
+        options = convert_enum_to_select_options(TabEvents))
     async def initialize(self, select, interaction: discord.Interaction):
         event_type = select.values[0]
         
@@ -33,21 +34,6 @@ class InitializingTabView(BaseView):
         await interaction.response.send_modal(ProcessorGui())
         await interaction.followup.send("Generating Data Prompt...", ephemeral=True)
         await interaction.delete_original_response()
-
-class ActionButton(DefaultButton):
-    def __init__(self, label, processor=None, event=None, edit_modal = None):
-        self.edit_modal: BaseModal = edit_modal
-        super().__init__(label, processor, event)
-    
-    async def callback(self, interaction: discord.Interaction):
-        if self.label == "CONFIRM":
-            self.processor(self.event())
-        elif self.label == "EDIT":
-            await interaction.response.send_modal(self.edit_modal)
-            await interaction.followup.send("Editing Prompt...", ephemeral=True)
-            await interaction.delete_original_response()
-        else:
-            await interaction.respond("Canceling", ephemeral=True)
 
             
 class ConfirmationView(BaseView):
@@ -71,27 +57,41 @@ class ConfirmationView(BaseView):
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         return True
 
+class ActionButton(DefaultButton):
+    def __init__(self, label, processor=None, event=None, edit_modal = None):
+        self.edit_modal: BaseModal = edit_modal
+        super().__init__(label, processor, event)
+    
+    async def callback(self, interaction: discord.Interaction):
+        view: BaseView = self.view 
+        if self.label == "CONFIRM":
+            self.processor(self.event)
+            await interaction.respond("Process Completed", ephemeral=True)
+        elif self.label == "EDIT":
+            await interaction.response.send_modal(self.edit_modal)
+            await interaction.followup.send("Editing Prompt...", ephemeral=True)
+        else:
+            await interaction.respond("Canceling Process", ephemeral=True)
+        await interaction.followup.delete_message(view.message.id)
 
 class CreateTabModal(BaseModal):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(title = "Create Tab", *args, **kwargs)
         self.modal_items = [
-            {"label": "Recepient"},
-            {"label": "Amount"},
-            {"label": "Description", "style": discord.InputTextStyle.paragraph},
-            {"label": "Members", "style": discord.InputTextStyle.multiline,
-            "placeholder": "Names must be either new line or comma separated"}
+            {"label": "Name Of Tab"},
+            {"label": "Recipient"},
+            {"label": "Description (Optional)", "style": discord.InputTextStyle.paragraph, "required": False},
+            {"label": "Senders", "style": discord.InputTextStyle.multiline,
+            "placeholder": "Name, Amount. Senders must be newline separated"}
             ] 
+        self.confirmation_view = ConfirmationView
         self.set_items(self.modal_items)
-
-    
-    async def callback(self, interaction: discord.Interaction):
-        self._pre_processing()
-        view =  ConfirmationView(self.processor, 
-                                 event=self.event, 
-                                 button_labels=["CONFIRM", "EDIT", "CANCEL"],
-                                 edit_modal=self)
-        await interaction.response.send_message(view=view, embed=self.embed, ephemeral=True)  
+        self.embed_fields = {
+            "Name Of Tab": "Name Of Tab",
+            "Recipient": "Recipient",
+            "Description (Optional)": "Description",
+            "Senders": "Senders"
+            }
 
 
         
@@ -101,10 +101,12 @@ class AddUserTabModal(BaseModal):
         self.modal_items = [
             {"label": "Adjustments", "style": discord.InputTextStyle.multiline,
             "placeholder": 
-            """user, percentage. New line separated"""
+            """user, Amount. New line separated"""
                }
             ] 
-        self.set_items(self.modal_items)
+        self.confirmation_view = ConfirmationView
+        self.set_items(self.modal_items)    
+
 
 class PaymentTabModal(BaseModal):
     def __init__(self, *args, **kwargs) -> None:
@@ -114,7 +116,9 @@ class PaymentTabModal(BaseModal):
             {"label": "User"},
             {"label": "Amount"}
             ] 
-        self.set_items(self.modal_items)
+        self.confirmation_view = ConfirmationView
+        self.set_items(self.modal_items) 
+
 
 class DeleteTabModal(BaseModal):
     def __init__(self, *args, **kwargs) -> None:
@@ -122,13 +126,52 @@ class DeleteTabModal(BaseModal):
         self.modal_items = [
             {"label": "Tab ID", "placeholder": "Must be a valid and open tab. Use GET TAB to see available tabs."}
             ] 
-        self.set_items(self.modal_items)
+        self.confirmation_view = ConfirmationView
+        self.set_items(self.modal_items) 
+
 
 class GetTabModal(BaseModal):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(title = "Get Tab", *args, **kwargs)
         self.modal_items = [
-            {"label": "Tab ID", "placeholder": "Must be a valid and open tab. Use GET TAB to see available tabs."}
+            {"label": "Tab ID", "placeholder": "Fetches tab information."}
             ] 
         self.set_items(self.modal_items)
-   
+
+    async def callback(self, interaction: discord.Interaction):
+        self._pre_processing()
+        results: discord.Embed = self.processor(self.event)
+
+        await interaction.response.send_message(embed=results, ephemeral=True)  
+    
+    def processor(self, event):
+
+        # Will return an embed with tab details
+        _res = discord.Embed(title="Tab Information")
+        return _res
+    
+
+class ListTabsModal(BaseModal):
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(title = "Search Criteria", *args, **kwargs)
+        self.modal_items = [
+            {"label": "Begin Date"},
+            {"label": "End Date"},
+            {"label": "Recipients", "style": discord.InputTextStyle.multiline,
+            "placeholder": "Must be newline separated"},
+            {"label": "Senders", "style": discord.InputTextStyle.multiline,
+            "placeholder": "Must be newline separated"}
+            ] 
+        self.set_items(self.modal_items)
+
+    async def callback(self, interaction: discord.Interaction):
+        self._pre_processing()
+        results = self.processor(self.event)
+        await interaction.response.send_message(embeds=[self.embed, results], ephemeral=True)  
+
+
+    def processor(self, event):
+
+        # Will return an embed with tab details
+        _res = discord.Embed(title="Tab Information")
+        return _res

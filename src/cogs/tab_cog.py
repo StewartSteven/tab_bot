@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from gui_processors.tab_processor import InitializingTabView
+from processors.gui_processors.tab_processor import InitializingTabView
 
 class GuiTabCog(commands.Cog): 
     """
