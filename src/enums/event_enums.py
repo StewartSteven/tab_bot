@@ -10,3 +10,4 @@ class TabEvents(Enum):
     DELETE = "Delete an existing tab"
     GET = "Retrieve an existing tab"
     LIST = "Search for existing tabs"
+    TEST = "For Modal Testing Only"

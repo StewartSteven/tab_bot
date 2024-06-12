@@ -1,7 +1,7 @@
 import discord
 from src.common.utils import convert_enum_to_select_options
 from src.enums.event_enums import TabEvents
-from gui.view import BaseView
+from gui.view import BaseView, EmojiSelector
 from gui.button import DefaultButton
 from gui.modal import BaseModal
 
@@ -12,7 +12,8 @@ def get_event_processor(event_type) -> BaseModal:
             "ADD_USER_TO_TAB": AddUserTabModal,
             "MAKE_PAYMENT": PaymentTabModal,
             "GET": GetTabModal,
-            "LIST": ListTabsModal
+            "LIST": ListTabsModal,
+            "TEST": TestTabModal
         }
         return event_processors.get(event_type)
 
@@ -175,3 +176,15 @@ class ListTabsModal(BaseModal):
         # Will return an embed with tab details
         _res = discord.Embed(title="Tab Information")
         return _res
+    
+class TestTabModal(BaseModal):
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(title = "Create Tab", *args, **kwargs)
+        self.modal_items = [
+            {"label": "Test"}
+            ] 
+        self.confirmation_view = EmojiSelector
+        self.set_items(self.modal_items)
+
+    async def callback(self, interaction: discord.Interaction):
+        await interaction.response.send_message(view=EmojiSelector(emojis=interaction.guild.emojis))

@@ -8,7 +8,7 @@ from cogs.tab_cog import GuiTabCog
 from src.cogs.members_cog import MembersCog
 import common.env as env
 
-bot = DiscordBot()
+bot = DiscordBot(intents=discord.Intents.all())
 
 bot.add_cog(GuiTabCog(bot=bot))
 # bot.add_cog(MembersCog(bot=bot))

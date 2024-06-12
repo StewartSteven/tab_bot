@@ -1,3 +1,4 @@
+from ast import Tuple
 import copy
 from enum import Enum
 from typing import Dict, List
@@ -7,6 +8,14 @@ def convert_enum_to_select_options(items: Enum) -> List[discord.SelectOption]:
     options: List[discord.SelectOption] = []
     for item in items:
         option = discord.SelectOption(label=item.value, value=item.name)
+        options.append(option)
+    return options
+
+def convert_emojis_to_select_options(items: List[discord.Emoji]) -> List[discord.SelectOption]:
+    options: List[discord.SelectOption] = []
+    for item in items:
+        emoji_val = f":{item.name}:{item.id}"
+        option = discord.SelectOption(label=item.name, value=str(item.id), emoji=emoji_val)
         options.append(option)
     return options
     
