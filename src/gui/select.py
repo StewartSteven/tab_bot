@@ -1,10 +1,14 @@
 from typing import Optional
 import discord
-from common.utils import convert_enum_to_select_options, convert_emojis_to_select_options
+from src.common.utils import convert_enum_to_select_options, convert_emojis_to_select_options
+from src.enums.event_enums import TabEvents
 
 class BaseSelect(discord.ui.Select):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
+        self.placeholder = "Choose your action", # the placeholder text that will be displayed if nothing is selected
+        self.min_values = 1, # the minimum number of values that must be selected by the users
+        self.max_values = 1, # the maximum number of values that can be selected by the users
 
 class EmojiSelect(BaseSelect):
     def __init__(self, emojis, follow_up_item) -> None:
@@ -18,3 +22,7 @@ class EmojiSelect(BaseSelect):
         self.disabled = True
         await interaction.message.edit(view=self.view)
 
+class TabEventSelect(BaseSelect):
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.options = convert_enum_to_select_options(TabEvents)

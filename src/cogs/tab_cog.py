@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from processors.gui_processors.tab_processor import InitializingTabView
+from processors.gui_processors.tab_processor import TabProcessorView
 
 class GuiTabCog(commands.Cog): 
     """
@@ -17,7 +17,7 @@ class GuiTabCog(commands.Cog):
 
     @discord.slash_command(name="tabs", description = "Initiates Tab Management process")
     async def process(self, ctx: discord.ApplicationContext):
-        await ctx.respond("Select and option from the menu!", view=InitializingTabView(ctx.author), ephemeral=True)
+        await ctx.respond("Select an option from the menu!", view=TabProcessorView(ctx.author), ephemeral=True)
 
 
 def setup(bot: discord.Bot): # this is called by Pycord to setup the cog

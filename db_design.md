@@ -6,6 +6,11 @@
             - birthday
             - preferred_payment_method
             - default_split_percentage
+        - when creating a tab, if no amount is specified, tab is split using default_split_percentage
+        - If any sender does not have a default split percentage, amounts are required
+        - If amount is specified for one sender, all senders must have an amount
+        - Run validation,
+            - if invalid, notify user, bring back up modal
     - Tabs
         - tab metadata
             - Name
@@ -14,8 +19,17 @@
     - user_tab_map
         - maps individual users with individual tabs
         - breaks down individual user balances owed on tabs
-        - custom_split_percentage 
-    - User payments (?)
+    -user_tab_payment_status
+        - view
+        - Used to calculate if a user has paid off a tab
+        - this allows the user_tab_map to be update only
+        - If user makes overpayment, payment will not have tabid
+    - user_tab_payments_view
+        - Track payments to tab
+        - If payment applies, tabid is set
+        - If payment is more than tab amount, tabid is none
+        - Can filter where tabid is none to get overpayments
+    - user_payments (?)
         - Insert only table for each payment made
         - Maybe used for accounting?
             - Allows the tracking of balances overtime       
@@ -23,3 +37,35 @@
         - logging table
         - get_logs
             - print of this table from a given date range
+
+
+- tab a
+    - total: 35
+    - start with getting all user tabs from user_payments
+    - then pull in user_payments
+
+
+    - jamie: 10
+        - 5
+            - row1(remainingamount)
+                10-5
+                5
+    - brookler: 10
+        - 5
+        - 5
+            -row1=10-5=5
+            -row2=5-5=0
+    - peter: 7
+        - 3 
+        - 3
+        - 4
+            - row1=7-3=4
+            - row2=4-3=1
+            - row3=3-4=-1
+
+    - zach: 8
+        - 8
+            -rwo1 = 0
+  - Make another view, overpayments, to select from the above where remaining > 0
+- NOTE: JUST SUM UP PAYMENTS BY TAB AND SUB AMOUNT OWED BY TOTAL AMOUNT PAID TO GET TOTAL PAYMENT
+- DON'T NEED THE WINDOW (BUT CAN KEEP IT FOR TRACKING-)

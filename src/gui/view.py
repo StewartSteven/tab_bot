@@ -1,6 +1,5 @@
 import discord
 from src.gui.select import EmojiSelect
-from common.utils import convert_enum_to_select_options, convert_emojis_to_select_options
 
 class BaseView(discord.ui.View):
     def __init__(self, author=None):
