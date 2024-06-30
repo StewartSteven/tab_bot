@@ -20,14 +20,19 @@ class TabProcessorView(BaseView):
 
     def __init__(self, author=None):
         super().__init__(author=author)
-        select = TabEventSelect()
+        select = TabEventSelect(
+            placeholder = "Choose your action", # the placeholder text that will be displayed if nothing is selected
+            min_values = 1, # the minimum number of values that must be selected by the users
+            max_values = 1, # the maximum number of values that can be selected by the users
+        )
+        self.select = select
         select.callback = self.initialize
         self.add_item(
             select
         )
-    
-    async def initialize(self, select, interaction: discord.Interaction):
-        event_type = select.values[0]
+        
+    async def initialize(self, interaction: discord.Interaction):
+        event_type = self.select.values[0]
         
         ProcessorGui = get_event_processor(event_type)
 
