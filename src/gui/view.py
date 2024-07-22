@@ -11,11 +11,13 @@ class BaseView(discord.ui.View):
     async def interaction_check(self, interaction: discord.Interaction) -> bool:
         if self.author:
             return interaction.user.id == self.author.id
-        else:
-            return True
+        return True
     
     async def on_check_failure(self, interaction: discord.Interaction) -> None:
         await interaction.respond(f"Only the caller can use this command at the moment")
+    
+    async def interaction_completed(self, interaction: discord.Interaction, values):
+        await interaction.respond(f"Testing {values}", ephemeral=True)
 
 class EmojiSelector(BaseView):
     def __init__(self, emojis, follow_up_item = None, author=None):

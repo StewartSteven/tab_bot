@@ -55,6 +55,7 @@ class MembersCog(commands.Cog):
         eventprocessor: Processor = MemberProcessor(event) 
         eventprocessor.process()
 
+    #TODO Add to get split percentage
 
 def setup(bot: discord.Bot): # this is called by Pycord to setup the cog
     bot.add_cog(MembersCog(bot)) # add the cog to the bot

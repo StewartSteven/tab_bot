@@ -38,6 +38,7 @@ class PaymentService:
                     self.make_payment(_event)
                     overpayment_amount = 0
                     print("All old tabs have been paid off.")
+                    break
                     
 
         if overpayment_amount > 0:
