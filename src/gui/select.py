@@ -69,3 +69,4 @@ class ListTabsSelect(BaseSelect):
         self.disabled = True
         await interaction.message.edit(view=self.view)
         return self.values[0]
+    
