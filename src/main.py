@@ -4,7 +4,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
 
 from src.services.discord_bot import DiscordBot
-from cogs.tab_cog import GuiTabCog
+from src.cogs.tab_cog import GuiTabCog
 from src.cogs.members_cog import MembersCog
 import common.env as env
 

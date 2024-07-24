@@ -74,10 +74,10 @@ class BaseModal(discord.ui.Modal):
         invalid_fields = self._validate_response(self.event)
         if invalid_fields:
             self._generate_invalid_response(invalid_fields)
-            button_labels = ["BACK", "CANCEL"]
+            button_labels = ["EDIT", "CANCEL"]
         else:
             self._generate_valid_response()
-            button_labels=["CONFIRM", "BACK", "CANCEL"]
+            button_labels=["CONFIRM", "EDIT", "CANCEL"]
         view =  self.confirmation_view(self.processor, 
                                  event=self.event, 
                                  button_labels=button_labels,
