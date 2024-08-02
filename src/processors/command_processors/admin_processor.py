@@ -19,7 +19,7 @@ class Processor(ABC):
     def process(self):
         pass
 
-class MemberProcessor(Processor):
+class AdminProcessor(Processor):
     """
     Member Processor class
     """

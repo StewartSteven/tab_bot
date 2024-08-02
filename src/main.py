@@ -11,6 +11,6 @@ import common.env as env
 bot = DiscordBot(intents=discord.Intents.all())
 
 bot.add_cog(GuiTabCog(bot=bot))
-# bot.add_cog(MembersCog(bot=bot))
+# bot.add_cog(AdminCog(bot=bot))
 
 bot.run(env.get_token())

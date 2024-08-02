@@ -1,14 +1,12 @@
 import discord
 from discord.ext import commands
 from datetime import datetime as dt
-from processors.command_processors.member_processor import MemberProcessor, Processor
+from processors.command_processors.admin_processor import AdminProcessor, Processor
 
-class MembersCog(commands.Cog): 
+class AdminCog(commands.Cog): 
     """
-    Cog to automate Member Updates
+    Cog for admin commands
     
-    Note: This Cog only contains commands that run on new members being added or when the bot is first ran
-
     Cogs are used for organizing functionality and commands for the bot
     """
 
@@ -25,7 +23,7 @@ class MembersCog(commands.Cog):
             }
         ]
         event = {"type":"MEMBER", "sub_type": "ADD", "body": members}
-        eventprocessor: Processor = MemberProcessor(event) 
+        eventprocessor: Processor = AdminProcessor(event) 
         eventprocessor.process()
 
     @commands.Cog.listener()
@@ -38,7 +36,7 @@ class MembersCog(commands.Cog):
             }
         ]
         event = {"type":"MEMBER", "sub_type": "REMOVE", "body": members}
-        eventprocessor: Processor = MemberProcessor(event) 
+        eventprocessor: Processor = AdminProcessor(event) 
         eventprocessor.process()
     
     @commands.Cog.listener()
@@ -52,10 +50,5 @@ class MembersCog(commands.Cog):
             for member in self.bot.get_all_members()
         ]
         event = {"type":"MEMBER", "sub_type": "REFRESH", "body": members}
-        eventprocessor: Processor = MemberProcessor(event) 
+        eventprocessor: Processor = AdminProcessor(event) 
         eventprocessor.process()
-
-    #TODO Add to get split percentage
-
-def setup(bot: discord.Bot): # this is called by Pycord to setup the cog
-    bot.add_cog(MembersCog(bot)) # add the cog to the bot
