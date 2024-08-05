@@ -21,7 +21,7 @@ class Processor(ABC):
 
 class AdminProcessor(Processor):
     """
-    Member Processor class
+    Admin Processor class
     """
     def __init__(self, event, ctx = None) -> None:
         super().__init__(event, ctx)
@@ -38,9 +38,15 @@ class AdminProcessor(Processor):
         processor()
 
     def add_member(self):
+        """
+        Use db.insert_users to add users, unsure how to pull from discord form/event
+        """
         pass
         
     def remove_member(self):
+        """
+        Either needs to clear users and insert without removed member OR write new func in db.py
+        """
         pass
 
     def refresh_members(self):
@@ -49,6 +55,9 @@ class AdminProcessor(Processor):
         
 
     def get_members(self):
+        """
+        Needs new func in db.py, reference other methods and test.ipynb
+        """
         pass
        
 
